@@ -129,7 +129,7 @@ GameObject:
   m_Component:
   - component: {fileID: 160921898}
   - component: {fileID: 160921897}
-  m_Layer: 4
+  m_Layer: 0
   m_Name: recycle_items_0
   m_TagString: background
   m_Icon: {fileID: 0}
