@@ -4,28 +4,33 @@ public class TrashSpawner : MonoBehaviour
 {
     [SerializeField] private GameObject trashObject;
     [SerializeField] private Sprite[] trashSprites;
+
     [SerializeField] private float minX = -8f;
     [SerializeField] private float maxX = 8f;
     [SerializeField] private float minY = -4f;
     [SerializeField] private float maxY = 4f;
-    [SerializeField] private int startTrashCount = 10;
 
-    private void Start()
-    {
-        for (int i = 0; i < startTrashCount; i++)
-        {
-            SpawnTrash();
-        }
+    [SerializeField] private float spawnZ = -1f;
 
+    private void Awake(){
         trashObject.SetActive(false);
     }
 
-    private void SpawnTrash()
-    {
+    public void SpawnTrash(int spawnCount){
+        for (int i = 0; i < spawnCount; i++){
+            SpawnOneTrash();
+        }
+    }
+
+    private void SpawnOneTrash(){
         float randomX = Random.Range(minX, maxX);
         float randomY = Random.Range(minY, maxY);
 
-        Vector2 randomPosition = new Vector2(randomX, randomY);
+        Vector3 randomPosition = new Vector3(
+            randomX,
+            randomY,
+            spawnZ
+        );
 
         GameObject newTrash = Instantiate(
             trashObject,
@@ -36,10 +41,24 @@ public class TrashSpawner : MonoBehaviour
         SpriteRenderer spriteRenderer =
             newTrash.GetComponent<SpriteRenderer>();
 
-        int randomIndex = Random.Range(0, trashSprites.Length);
+        if (spriteRenderer != null &&
+            trashSprites.Length > 0){
+            int randomIndex = Random.Range(
+                0,
+                trashSprites.Length
+            );
 
-        spriteRenderer.sprite = trashSprites[randomIndex];
+            spriteRenderer.sprite =
+                trashSprites[randomIndex];
+        }
 
         newTrash.SetActive(true);
+
+        PhaseManager phaseManager =
+            FindFirstObjectByType<PhaseManager>();
+
+        if (phaseManager != null){
+            phaseManager.AddTrash();
+        }
     }
 }
