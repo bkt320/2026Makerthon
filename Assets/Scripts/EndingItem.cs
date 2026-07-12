@@ -4,50 +4,29 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 #endif
 
-public class Trash : MonoBehaviour
+public class EndingItem : MonoBehaviour
 {
-    [SerializeField] private float pollutionDelay = 10f;
-    [SerializeField] private float pollutionAmount = 5f;
+    [SerializeField] private float disappearTime = 5f;
 
     private PhaseManager phaseManager;
-    private PollutionManager pollutionManager;
 
     private float aliveTime;
-
-    private bool pollutionAdded;
     private bool playerInRange;
     private bool collected;
 
     private void OnEnable(){
         aliveTime = 0f;
-        pollutionAdded = false;
         playerInRange = false;
         collected = false;
 
         phaseManager =
             FindFirstObjectByType<PhaseManager>();
-
-        pollutionManager =
-            FindFirstObjectByType<PollutionManager>();
     }
 
     private void Update(){
         aliveTime += Time.deltaTime;
 
-        if (!pollutionAdded &&
-            aliveTime >= pollutionDelay){
-            pollutionAdded = true;
-
-            if (pollutionManager != null){
-                pollutionManager.AddPollution(
-                    pollutionAmount
-                );
-            }
-
-            if (phaseManager != null){
-                phaseManager.RemoveTrash();
-            }
-
+        if (aliveTime >= disappearTime){
             Destroy(gameObject);
             return;
         }
@@ -57,14 +36,7 @@ public class Trash : MonoBehaviour
         }
 
         if (WasCollectKeyPressed()){
-            collected = true;
-
-            if (phaseManager != null){
-                phaseManager.CollectTrash();
-                phaseManager.RemoveTrash();
-            }
-
-            Destroy(gameObject);
+            CollectItem();
         }
     }
 
@@ -82,6 +54,16 @@ public class Trash : MonoBehaviour
             KeyCode.Space
         );
 #endif
+    }
+
+    private void CollectItem(){
+        collected = true;
+
+        if (phaseManager != null){
+            phaseManager.CollectEndingItem();
+        }
+
+        Destroy(gameObject);
     }
 
     private void OnTriggerEnter2D(

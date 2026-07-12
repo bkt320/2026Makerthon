@@ -1,6 +1,8 @@
-using UnityEngine;
-using UnityEngine.UI;
+using System.Collections;
 using TMPro;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class PollutionManager : MonoBehaviour
 {
@@ -9,68 +11,94 @@ public class PollutionManager : MonoBehaviour
 
     [Header("오염도 UI")]
     [SerializeField] private Slider pollutionSlider;
-
     [SerializeField] private TMP_Text pollutionText;
 
-    private void Start()
-    {
+    [Header("게임 오버")]
+    [SerializeField] private TrashSpawner trashSpawner;
+    [SerializeField] private int gameOverTrashCount = 100;
+    [SerializeField] private float gameOverDelay = 1f;
+
+    [Header("씬")]
+    [SerializeField] private string gameOverSceneName = "GameOver";
+
+    private bool gameOver;
+
+    private void Start(){
         Time.timeScale = 1f;
 
-        if (pollutionSlider != null)
-        {
+        if (trashSpawner == null){
+            trashSpawner =
+                FindFirstObjectByType<TrashSpawner>();
+        }
+
+        if (pollutionSlider != null){
             pollutionSlider.minValue = 0f;
             pollutionSlider.maxValue =
                 maxPollution;
-
-            pollutionSlider.value =
-                pollution;
         }
+
         UpdatePollutionUI();
     }
 
-    public void AddPollution(float amount)
-    {
-        pollution += amount;
-
-        if (pollution > maxPollution)
-        {
-            pollution = maxPollution;
+    public void AddPollution(
+        float amount
+    ){
+        if (gameOver){
+            return;
         }
 
-        UpdatePollutionUI();
+        pollution += amount;
 
-        Debug.Log(
-            "현재 오염도: " +
-            pollution +
-            " / " +
+        pollution = Mathf.Clamp(
+            pollution,
+            0f,
             maxPollution
         );
 
-        if (pollution >= maxPollution)
-        {
-            GameOver();
+        UpdatePollutionUI();
+
+        if (pollution >= maxPollution){
+            StartCoroutine(
+                GameOverSequence()
+            );
         }
     }
 
     private void UpdatePollutionUI(){
-    if (pollutionSlider != null){
-        pollutionSlider.value = pollution;
+        if (pollutionSlider != null){
+            pollutionSlider.value =
+                pollution;
+        }
+
+        if (pollutionText != null){
+            pollutionText.text =
+                "오염도 : " +
+                pollution.ToString("0") +
+                " %";
+        }
     }
 
-    if (pollutionText != null){
-        pollutionText.text =
-            "오염도 : " +
-            pollution.ToString("0") +
-            " % ";
-    }
-}
+    private IEnumerator GameOverSequence(){
+        if (gameOver){
+            yield break;
+        }
 
-    private void GameOver()
-    {
-        Debug.Log(
-            "게임 오버: 오염도가 100이 되었습니다."
+        gameOver = true;
+
+        if (trashSpawner != null){
+            trashSpawner.FillScreenWithTrash(
+                gameOverTrashCount
+            );
+        }
+
+        yield return new WaitForSeconds(
+            gameOverDelay
         );
 
-        Time.timeScale = 0f;
+        Time.timeScale = 1f;
+
+        SceneManager.LoadScene(
+            gameOverSceneName
+        );
     }
 }
