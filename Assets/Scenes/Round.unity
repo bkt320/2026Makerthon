@@ -159,22 +159,22 @@ MonoBehaviour:
   phase1StartCount: 5
   phase1AddCount: 3
   phase1SpawnTime: 5
-  phase1MinTarget: 1
-  phase1MaxTarget: 1
+  phase1MinTarget: 10
+  phase1MaxTarget: 10
   phase2StartCount: 5
   phase2AddCount: 5
   phase2SpawnTime: 4
-  phase2MinTarget: 1
-  phase2MaxTarget: 1
+  phase2MinTarget: 15
+  phase2MaxTarget: 15
   phase3StartCount: 10
   phase3AddCount: 5
   phase3SpawnTime: 3
-  phase3Target: 1
+  phase3Target: 20
   endingItemCountPerPhase: 3
   endingItemSpawnDelayMin: 3
   endingItemSpawnDelayMax: 8
-  endingItemTargetMin: 1
-  endingItemTargetMax: 1
+  endingItemTargetMin: 3
+  endingItemTargetMax: 3
 --- !u!4 &77456941
 Transform:
   m_ObjectHideFlags: 0
